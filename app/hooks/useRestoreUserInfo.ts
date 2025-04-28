@@ -16,6 +16,7 @@ export const useRestoreUserInfo = () => {
             const jsonValue = await AsyncStorage.getItem('userInfo');
             if (jsonValue != null) {
               const user: UserInfo = JSON.parse(jsonValue);
+              console.log("user info ++++++ ",JSON.stringify(user));
               setUserInfo(user);
               navigation.replace('HomeScreen'); // User found, go to Home
             } else {

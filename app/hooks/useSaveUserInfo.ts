@@ -10,10 +10,11 @@ export const useSaveUserInfo = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   
     const saveUserInfo = async (user: UserInfo) => {
+        console.log("user info ---- ",JSON.stringify(user));
       try {
         await AsyncStorage.setItem('userInfo', JSON.stringify(user));
         setUserInfo(user);
-        navigation.replace('HomeScreen'); // naviagte to notificationscreen
+        navigation.replace('NotificationScreen'); // naviagte to notificationscreen
       } catch (e) {
         console.error('Saving user info failed', e);
       }
