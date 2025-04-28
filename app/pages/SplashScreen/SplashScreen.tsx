@@ -7,8 +7,8 @@ import { delay } from "../../utills/delay";
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        width:'100%',
-        height : '100%',
+        width: '100%',
+        height: '100%',
         backgroundColor: '#000',
         justifyContent: 'center',
         alignItems: 'center',
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
 const SplashScreen = () => {
 
     const [startRestore, setStartRestore] = useState(false);
-   const { loading } = useRestoreUserInfo(startRestore); //Only start after 2s delay
+    const { loading } = useRestoreUserInfo(startRestore); //Only start after 2s delay
     useEffect(() => {
         /**
          * Starts restoring user info after a 2 second splash screen display.
@@ -33,11 +33,11 @@ const SplashScreen = () => {
         };
 
         initiateRestore();
-    }, []); 
+    }, []);
 
     return (
         <View style={styles.container}>
-            <IconContainer/>
+            <IconContainer />
         </View>
     )
 };

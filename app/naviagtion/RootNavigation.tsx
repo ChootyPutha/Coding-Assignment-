@@ -9,6 +9,16 @@ import { NavigationContainer as NavContainer } from '@react-navigation/native';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+/**
+ * The main navigation stack for the app.
+ *
+ * Includes the following screens:
+ *
+ * - SplashScreen: The initial loading screen.
+ * - LegalInfoScreen: The screen that asks for the user's legal name.
+ * - NotificationScreen: The screen that asks for permission to send notifications.
+ * - HomeScreen: The main screen of the app.
+ */
 function RootStack() {
   return (
     <NavContainer>

@@ -2,6 +2,14 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useNetwork } from '../../../hooks/useNetwork';
 
+
+/**
+ * A component that displays a banner indicating that there is no internet connection.
+ * It uses the `useNetwork` hook to determine if the user has an internet connection.
+ * If the user has an internet connection, the component will not render anything.
+ * Otherwise, it will render a red View with a white Text component inside,
+ * displaying the text "No Internet Connection".
+ */
 export default function NoInternetBanner() {
     const { isConnected } = useNetwork();
   

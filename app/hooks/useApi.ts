@@ -2,6 +2,19 @@ import { useState } from 'react';
 import axiosInstance from '../utills/axiosInstance';
 import UseApiOptions from '../types/UseApiOptionsTypes';
 
+
+/**
+ * Custom hook for making API requests using Axios.
+ * 
+ * @template T - The expected data type of the response.
+ * 
+ * @returns An object containing:
+ * - `request`: A function to make the API request.
+ * - `loading`: A boolean indicating if the request is in progress.
+ * - `error`: A string with the error message, if any.
+ * - `responseCode`: The HTTP status code from the response.
+ */
+
 export function useApi<T = any>() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);

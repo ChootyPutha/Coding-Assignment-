@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, StatusBar, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,8 +12,8 @@ const backgroundStyle = {
 
 const LegalInfoScreen = () => {
 
-    const [firstName, setFirstName] = React.useState('');
-    const [lastName, setLastName] = React.useState('');
+    const [firstName, setFirstName] = useState('Your legal');
+    const [lastName, setLastName] = useState('name');
 
     const { saveUserInfo } = useSaveUserInfo();
 
@@ -44,7 +44,7 @@ const LegalInfoScreen = () => {
 
                         <View style={styles.titelHodler}>
                             <View style={styles.titelContainer}>
-                                <Text style={styles.titelText}>Your legal name</Text>
+                                <Text style={styles.titelText}>{`${firstName} ${lastName}`}</Text>
                             </View>
                         </View>
 
