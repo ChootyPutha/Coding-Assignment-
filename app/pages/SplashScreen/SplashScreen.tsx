@@ -1,11 +1,8 @@
-import React, { useEffect } from "react";
-import { View, StyleSheet, Text } from 'react-native';
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, } from 'react-native';
 import IconContainer from "../../components/atoms/Iconcontainer/Iconcontainer";
 import { useRestoreUserInfo } from "../../hooks/useRestoreUserInfo";
-// import { NavigationContainer } from '@react-navigation/native';
-// import { createStackNavigator } from '@react-navigation/stack';
-
-// import { RootStackParamList } from "../../types/NavigationTypes";
+import { delay } from "../../utills/delay";
 
 const styles = StyleSheet.create({
     container: {
@@ -18,19 +15,25 @@ const styles = StyleSheet.create({
     }
 });
 
+/**
+ * SplashScreen Component
+ * Displays the app logo while restoring user info after a short delay.
+ */
 const SplashScreen = () => {
-   // const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-   const { loading } = useRestoreUserInfo();
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            // Navigate to your target screen after 3 seconds
-          //  navigation.replace('LegalInfoScreen');
-          
-        }, 2000);
 
-        // Clean up the timer if the component unmounts
-        return () => clearTimeout(timer);
-    }, []); //navigation
+    const [startRestore, setStartRestore] = useState(false);
+   const { loading } = useRestoreUserInfo(startRestore); //Only start after 2s delay
+    useEffect(() => {
+        /**
+         * Starts restoring user info after a 2 second splash screen display.
+         */
+        const initiateRestore = async () => {
+            await delay(2000); // 2s delay
+            setStartRestore(true); // trigger user restore
+        };
+
+        initiateRestore();
+    }, []); 
 
     return (
         <View style={styles.container}>

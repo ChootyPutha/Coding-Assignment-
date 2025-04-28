@@ -11,6 +11,18 @@ const styles = StyleSheet.create({
     },
 });
 
+
+/**
+ * IconContainer Component
+ * 
+ * Renders a logo image within a container. Accepts additional styling and image properties.
+ * 
+ * Props:
+ * - style: An optional style object to override or extend the default logo style.
+ * - ...props: Additional ImageProps such as accessibilityLabel, accessibilityHint, 
+ *   and accessibilityRole to provide better accessibility information.
+ */
+
 function IconContainer({ style, ...props }: ComponentTypes & ImageProps) {
     return (
         <View>

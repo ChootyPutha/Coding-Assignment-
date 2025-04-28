@@ -5,12 +5,21 @@ import { useAppContext, UserInfo } from '../context/AppContext';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/NavigationTypes';
 
-export const useRestoreUserInfo = () => {
+/**
+ * Custom hook to restore the user's information from storage.
+ * Navigates based on whether user data exists.
+ * @param shouldRestore - Whether to start the restoration process (default: true)
+ */
+export const useRestoreUserInfo = (shouldRestore = true) => {
+
     const { setUserInfo } = useAppContext();
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const [loading, setLoading] = useState(true);
+    
 
     useEffect(() => {
+      if (!shouldRestore) return; // Skip if shouldRestore is false
+
         const restoreUser = async () => {
           try {
             const jsonValue = await AsyncStorage.getItem('userInfo');
@@ -30,7 +39,7 @@ export const useRestoreUserInfo = () => {
         };
     
         restoreUser();
-      }, []);
+      }, [shouldRestore]);
 
       return { loading };
         
