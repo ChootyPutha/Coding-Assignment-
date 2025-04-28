@@ -1,6 +1,7 @@
 import React from "react";
-import { View, StyleSheet, StatusBar, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, StyleSheet, StatusBar, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNotificationPermissions } from "../../hooks/useNotificationPermissions";
 
 const isDarkMode = false;
 
@@ -9,6 +10,31 @@ const backgroundStyle = {
 };
 
 const NoficationScreen = () => {
+
+    const { status, isLoading } = useNotificationPermissions();
+
+    const handleAllowNotifications = () => {
+        if (status === 'granted') {
+            Alert.alert('Notifications are already enabled.');
+        } else if (status === 'denied') {
+            Alert.alert(
+                'Permission Denied',
+                'Please enable notifications manually in Settings.',
+                [{ text: 'OK' }]
+            );
+        } else {
+            Alert.alert('Requesting Permission...', 'Please wait.');
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <SafeAreaView style={styles.container}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </SafeAreaView>
+        );
+    }
+
     return (
         <SafeAreaView style={{ flex: 1, width: '100%', height: '100%', paddingTop: 15 }}>
             <View style={styles.container}>
@@ -81,12 +107,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    cardItemContainer : {
+    cardItemContainer: {
         width: '100%',
         height: '90%',
         alignItems: 'center',
         justifyContent: 'center',
-        padding : 10
+        padding: 10
     },
     buttonContainer: {
         position: 'absolute',

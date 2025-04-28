@@ -1,8 +1,12 @@
 import React, { useState } from "react";
-import { View, StyleSheet, StatusBar, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, StyleSheet, StatusBar, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { useSaveUserInfo } from "../../hooks/useSaveUserInfo";
+import { useLegalInfo } from "../../hooks/useLegalInfo";
+import Title from "../../components/molecules/Title/Title";
+import InfoText from "../../components/atoms/InfoText/InfoText";
+import FormInput from "../../components/atoms/FormInput/FormInput";
+import FloatingButton from "../../components/atoms/FloatingButton/FloatingButton";
 
 const isDarkMode = false;
 
@@ -10,71 +14,63 @@ const backgroundStyle = {
     backgroundColor: isDarkMode ? '#FFF' : '#000',
 };
 
-const LegalInfoScreen = () => {
-
-    const [firstName, setFirstName] = useState('Your legal');
-    const [lastName, setLastName] = useState('name');
-
+const LegalInfoScreen: React.FC = () => {
+    const { firstName, lastName, setFirstName, setLastName } = useLegalInfo();
     const { saveUserInfo } = useSaveUserInfo();
-
+  
     const handleSubmit = () => {
-        const user = {
-          firstName: firstName,
-          lastName: lastName,
-        };
+      if (firstName.length > 0 && lastName.length > 0) {
+        const user = { firstName, lastName };
         saveUserInfo(user);
-      };
-
+      } else {
+        Alert.alert(
+          'Validation Error',
+          'Please enter your name, we need to know a bit about you so that we can create your account.',
+          [{ text: 'OK' }]
+        );
+      }
+    };
+  
     return (
-        <SafeAreaView style={{ flex: 1, width: '100%', height: '100%', paddingTop: 15 }}>
-            <KeyboardAvoidingView
-                style={{ flex: 1 }}
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20} // You can adjust this if header overlaps
-            >
-                <ScrollView
-                    contentContainerStyle={{ flexGrow: 1 }}
-                    keyboardShouldPersistTaps="handled"
-                >
-                    <View style={styles.container}>
-                        <StatusBar
-                            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-                            backgroundColor={backgroundStyle.backgroundColor}
-                        />
-
-                        <View style={styles.titelHodler}>
-                            <View style={styles.titelContainer}>
-                                <Text style={styles.titelText}>{`${firstName} ${lastName}`}</Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.infoHolder}>
-                            <View style={styles.infoTextContainer}>
-                                <Text style={styles.infoText}>
-                                    We need to know a bit about you so that we can create your account.
-                                </Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.formHolder}>
-                            <View style={styles.formElemenent}>
-                                <TextInput style={styles.formInputs} placeholder="First Name" onChangeText={(text) => setFirstName(text)} />
-                            </View>
-                            <View style={styles.formElemenent}>
-                                <TextInput style={styles.formInputs} placeholder="Last Name" onChangeText={(text) => setLastName(text)} />
-                            </View>
-                        </View>
-
-                    </View>
-                    {/* Floating Button */}
-                    <TouchableOpacity style={styles.floatingButton} onPress={() => {alert('Button Pressed'); handleSubmit();}}>
-                        <Ionicons name="chevron-forward" size={30} color="white" />
-                    </TouchableOpacity>
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
+      <SafeAreaView style={{ flex: 1, width: '100%', height: '100%', paddingTop: 15 }}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+        >
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.container}>
+              <StatusBar
+                barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+                backgroundColor={backgroundStyle.backgroundColor}
+              />
+  
+              <Title firstName={firstName} lastName={lastName} />
+              <InfoText />
+  
+              <View style={styles.formHolder}>
+                <FormInput
+                  placeholder="First Name"
+                  value={firstName}
+                  onChangeText={setFirstName}
+                />
+                <FormInput
+                  placeholder="Last Name"
+                  value={lastName}
+                  onChangeText={setLastName}
+                />
+              </View>
+            </View>
+  
+            <FloatingButton onPress={handleSubmit} />
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     );
-};
+  };
 
 const styles = StyleSheet.create({
     container: {
@@ -115,7 +111,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto',
         fontSize: 16,
         fontWeight: '400',
-        color: '#000',
+        color: '#737373',
     },
     formHolder: {
         width: '100%',
@@ -129,7 +125,7 @@ const styles = StyleSheet.create({
     formInputs: {
         width: '100%',
         borderBottomWidth: 1,
-        borderBottomColor: '#000',
+        borderBottomColor: '#A3A3A3',
         paddingVertical: 8,
         fontSize: 18,
     },
