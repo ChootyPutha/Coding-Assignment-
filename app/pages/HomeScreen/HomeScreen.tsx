@@ -1,7 +1,10 @@
-import React from "react";
-import { View, StyleSheet, StatusBar, Text, Image } from 'react-native';
+import React, { useCallback, useEffect, useState } from "react";
+import { View, StyleSheet, StatusBar, Text, Image, Alert, TouchableOpacity, ActivityIndicator, FlatList, RefreshControl } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useAppContext } from "../../context/AppContext";
+import { useApi } from "../../hooks/useApi";
+import { NewsArticle } from "../../types/NewsArticleTypes";
+import * as Linking from 'expo-linking';
 
 const isDarkMode = false;
 
@@ -12,6 +15,87 @@ const backgroundStyle = {
 const HomeScreen = () => {
 
     const { userInfo, setUserInfo } = useAppContext();
+
+    const { request, loading, error } = useApi<NewsArticle[]>();
+    const [news, setNews] = useState<NewsArticle[]>([]);
+    const [refreshing, setRefreshing] = useState(false);
+
+
+    const fetchNews = useCallback(async () => {
+        try {
+            const data = await request({ url: '/news?category=general' });
+            if (data) {
+                setNews(data);
+            } else {
+                throw new Error('No data received from server');
+            }
+        } catch (err: any) {
+            console.error('Error fetching news:', err.message);
+            Alert.alert('Error', 'Failed to load news. Please try again later.');
+        }
+    }, [request]);
+
+    useEffect(() => {
+        fetchNews();
+    }, [fetchNews]);
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await fetchNews();
+        setRefreshing(false);
+    };
+
+    const renderItem = useCallback(({ item }: { item: NewsArticle }) => (
+        <TouchableOpacity style={styles.singleCardTouchArea} onPress={() => Linking.openURL(item.url)} activeOpacity={0.7}>
+            <View style={styles.singleCardHolder}>
+                <View style={styles.singleCardWrapper}>
+                    <View style={styles.singleCardImageWrapper}>
+                        {/* image */}
+                        <View style={styles.singleCardImageContainer}>
+                            <Image source={{ uri: item.image }} style={styles.singleCardImage} />
+                        </View>
+                    </View>
+                    <View style={styles.singleCardInfoWrapper}>
+                        {/* info */}
+                        <View style={styles.singleCardInfoContent}>
+                            <View style={styles.singleCardInfoSubTextContainer}>
+                                <View>
+                                    <Text>{item.category}</Text>
+                                </View>
+                                <View>
+                                    <Text>{item.datetime}</Text>
+                                </View>
+                            </View>
+                            <View style={styles.singleCardInfoMainTextContainer}>
+                                <View>
+                                    <Text>{item.headline}</Text>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </View>
+        </TouchableOpacity>
+    ), []);
+
+
+    const keyExtractor = useCallback((item: NewsArticle) => item.id.toString(), []);
+
+    if (loading && news.length === 0) {
+        return (
+            <View style={styles.center}>
+                <ActivityIndicator size="large" />
+            </View>
+        );
+    }
+
+    if (error && news.length === 0) {
+        return (
+            <View style={styles.center}>
+                <Text style={styles.errorText}>Something went wrong. Please try again later.</Text>
+            </View>
+        );
+    }
 
     return (
         <SafeAreaProvider>
@@ -29,34 +113,22 @@ const HomeScreen = () => {
                         </View>
 
                         <View style={styles.fetchDataHolder}>
-                            <View style={styles.singleCardHolder}>
-                                <View style={styles.singleCardWrapper}>
-                                    <View style={styles.singleCardImageWrapper}>
-                                        {/* image */}
-                                        <View style={styles.singleCardImageContainer}>
-                                            <Image source={require('../../../assets/icon.png')} style={styles.singleCardImage} />
-                                        </View>
+                            <FlatList
+                                data={news}
+                                keyExtractor={keyExtractor}
+                                renderItem={renderItem}
+                                contentContainerStyle={styles.list}
+                                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                                initialNumToRender={10}
+                                maxToRenderPerBatch={10}
+                                windowSize={5}
+                                removeClippedSubviews={true}
+                                ListEmptyComponent={
+                                    <View style={styles.center}>
+                                        <Text>No news available.</Text>
                                     </View>
-                                    <View style={styles.singleCardInfoWrapper}>
-                                        {/* info */}
-                                        <View style={styles.singleCardInfoContent}>
-                                            <View style={styles.singleCardInfoSubTextContainer}>
-                                                <View>
-                                                    <Text>The Economic Times</Text>
-                                                </View>
-                                                <View>
-                                                    <Text>12 June 2021</Text>
-                                                </View>
-                                            </View>
-                                            <View style={styles.singleCardInfoMainTextContainer}>
-                                                <View>
-                                                    <Text>Markets FTSE slides almost 2pc as sterling sinks to $1.38 </Text>
-                                                </View>
-                                            </View>
-                                        </View>
-                                    </View>
-                                </View>
-                            </View>
+                                }
+                            />
                         </View>
 
                     </View>
@@ -108,9 +180,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'green',
     },
-    singleCardHolder: {
+    singleCardTouchArea : {
         width: '100%',
         height: '20%',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    singleCardHolder: {
+        width: '100%',
+        height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'pink',
@@ -135,12 +213,12 @@ const styles = StyleSheet.create({
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        padding : 5,
+        padding: 5,
     },
     singleCardImage: {
         width: '100%',
         height: '100%',
-        resizeMode :'cover',
+        resizeMode: 'cover',
     },
     singleCardInfoWrapper: {
         width: '66.6%',
@@ -170,7 +248,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'gray'
-    }
+    },
+    center: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      errorText: {
+        color: 'red',
+        fontSize: 16,
+      },
+      list: {
+        paddingVertical: 8,
+      },
 });
 
 export default HomeScreen;

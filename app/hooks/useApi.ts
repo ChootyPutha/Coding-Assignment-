@@ -1,0 +1,41 @@
+import { useState } from 'react';
+import axiosInstance from '../utills/axiosInstance';
+import UseApiOptions from '../types/UseApiOptionsTypes';
+
+export function useApi<T = any>() {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+
+    const request = async ({ url, method = 'GET', data, params }: UseApiOptions<T>): Promise<T | null> => {
+        setLoading(true);
+        setError(null);
+    
+        try {
+          const response = await axiosInstance.request<T>({
+            url,
+            method,
+            data,
+            params,
+          });
+          return response.data;
+        } catch (err: any) {
+          console.error('API Error:', err);
+    
+          if (err.response) {
+            setError(err.response.data?.message || 'Server Error');
+          } else if (err.request) {
+            setError('No response from server');
+          } else {
+            setError('Unexpected error');
+          }
+    
+          return null;
+        } finally {
+          setLoading(false);
+        }
+      };
+    
+      return { request, loading, error };
+
+}
