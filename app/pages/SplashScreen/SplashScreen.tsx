@@ -19,16 +19,14 @@ const styles = StyleSheet.create({
 });
 
 const SplashScreen = () => {
-
-    const { loading } = useRestoreUserInfo();
-
    // const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
+   const { loading } = useRestoreUserInfo();
     useEffect(() => {
         const timer = setTimeout(() => {
             // Navigate to your target screen after 3 seconds
           //  navigation.replace('LegalInfoScreen');
-        }, 3000);
+          
+        }, 2000);
 
         // Clean up the timer if the component unmounts
         return () => clearTimeout(timer);

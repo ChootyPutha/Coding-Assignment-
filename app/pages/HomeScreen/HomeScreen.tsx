@@ -5,6 +5,7 @@ import { useAppContext } from "../../context/AppContext";
 import { useApi } from "../../hooks/useApi";
 import { NewsArticle } from "../../types/NewsArticleTypes";
 import * as Linking from 'expo-linking';
+import { useNetInfo } from "@react-native-community/netinfo";
 
 const isDarkMode = false;
 
@@ -16,12 +17,16 @@ const HomeScreen = () => {
 
     const { userInfo, setUserInfo } = useAppContext();
 
-    const { request, loading, error } = useApi<NewsArticle[]>();
+    const { request, loading, error, responseCode } = useApi<NewsArticle[]>();
     const [news, setNews] = useState<NewsArticle[]>([]);
     const [refreshing, setRefreshing] = useState(false);
+    const [canFetch, setCanFetch] = useState(true);
+    const netInfo = useNetInfo();
 
 
     const fetchNews = useCallback(async () => {
+        if (!canFetch) return;
+        setRefreshing(true);
         try {
             const data = await request({ url: '/news?category=general' });
             if (data) {
@@ -30,14 +35,33 @@ const HomeScreen = () => {
                 throw new Error('No data received from server');
             }
         } catch (err: any) {
-            console.error('Error fetching news:', err.message);
-            Alert.alert('Error', 'Failed to load news. Please try again later.');
+            console.error('Error fetching news:', err.message, responseCode);
+            if (responseCode === 429) {
+                Alert.alert(
+                    'Limit Reached',
+                    'Your free limit has been reached. Please get a premium subscription.',
+                    [{ text: 'OK' }]
+                );
+                setCanFetch(false); //  Stop further API calls
+            } else {
+                Alert.alert(
+                    'Error',
+                    'Failed to load news. Please try again later.',
+                    [{ text: 'OK' }]
+                );
+            }
+        } finally {
+            setRefreshing(false);
         }
-    }, [request]);
+    }, [request, canFetch]);
 
     useEffect(() => {
-        fetchNews();
-    }, [fetchNews]);
+        if (netInfo.isConnected) {
+            fetchNews();
+        } else {
+            Alert.alert('No Internet', 'Please check your internet connection.');
+        }
+    }, [fetchNews, netInfo.isConnected]);
 
     const onRefresh = async () => {
         setRefreshing(true);
@@ -180,7 +204,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'green',
     },
-    singleCardTouchArea : {
+    singleCardTouchArea: {
         width: '100%',
         height: '20%',
         alignItems: 'center',
@@ -253,14 +277,14 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-      },
-      errorText: {
+    },
+    errorText: {
         color: 'red',
         fontSize: 16,
-      },
-      list: {
+    },
+    list: {
         paddingVertical: 8,
-      },
+    },
 });
 
 export default HomeScreen;

@@ -5,10 +5,12 @@ import LegalInfoScreen from './app/pages/LegalInfoScreen/LegalInfoScreen';
 import NoficationScreen from './app/pages/NotificationScreen/NotificationScreen';
 import { AppProvider } from './app/context/AppContext';
 import RootStack from './app/naviagtion/RootNavigation';
+import NoInternetBanner from './app/components/atoms/NoInternetBanner/NoInternetBanner';
 
 export default function App() {
   return (
     <AppProvider>
+      <NoInternetBanner />
       <RootStack />
     </AppProvider>
   );
