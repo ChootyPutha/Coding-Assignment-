@@ -1,11 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import SplashScreen from './app/pages/SplashScreen/SplashScreen';
+import LegalInfoScreen from './app/pages/LegalInfoScreen/LegalInfoScreen';
+import NoficationScreen from './app/pages/NotificationScreen/NotificationScreen';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <NoficationScreen/>
     </View>
   );
 }
