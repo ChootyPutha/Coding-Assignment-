@@ -2,6 +2,7 @@ import React from "react";
 import { View, StyleSheet, StatusBar, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useSaveUserInfo } from "../../hooks/useSaveUserInfo";
 
 const isDarkMode = false;
 
@@ -10,6 +11,20 @@ const backgroundStyle = {
 };
 
 const LegalInfoScreen = () => {
+
+    const [firstName, setFirstName] = React.useState('');
+    const [lastName, setLastName] = React.useState('');
+
+    const { saveUserInfo } = useSaveUserInfo();
+
+    const handleSubmit = () => {
+        const user = {
+          firstName: firstName,
+          lastName: lastName,
+        };
+        saveUserInfo(user);
+      };
+
     return (
         <SafeAreaView style={{ flex: 1, width: '100%', height: '100%', paddingTop: 15 }}>
             <KeyboardAvoidingView
@@ -43,17 +58,16 @@ const LegalInfoScreen = () => {
 
                         <View style={styles.formHolder}>
                             <View style={styles.formElemenent}>
-                                <TextInput style={styles.formInputs} placeholder="First Name" />
+                                <TextInput style={styles.formInputs} placeholder="First Name" onChangeText={(text) => setFirstName(text)} />
                             </View>
                             <View style={styles.formElemenent}>
-                                <TextInput style={styles.formInputs} placeholder="Last Name" />
+                                <TextInput style={styles.formInputs} placeholder="Last Name" onChangeText={(text) => setLastName(text)} />
                             </View>
                         </View>
 
-                        {/* Optional: Add more Inputs if needed */}
                     </View>
                     {/* Floating Button */}
-                    <TouchableOpacity style={styles.floatingButton} onPress={() => alert('Button Pressed')}>
+                    <TouchableOpacity style={styles.floatingButton} onPress={() => {alert('Button Pressed'); handleSubmit();}}>
                         <Ionicons name="chevron-forward" size={30} color="white" />
                     </TouchableOpacity>
                 </ScrollView>
