@@ -2,6 +2,9 @@ import React from "react";
 import { View, StyleSheet, StatusBar, Image, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNotificationPermissions } from "../../hooks/useNotificationPermissions";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../types/NavigationTypes";
 
 const isDarkMode = false;
 
@@ -12,10 +15,11 @@ const backgroundStyle = {
 const NoficationScreen = () => {
 
     const { status, isLoading } = useNotificationPermissions();
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
     const handleAllowNotifications = () => {
         if (status === 'granted') {
-            Alert.alert('Notifications are already enabled.');
+            navigation.replace('HomeScreen');
         } else if (status === 'denied') {
             Alert.alert(
                 'Permission Denied',
@@ -45,7 +49,7 @@ const NoficationScreen = () => {
                 <View style={styles.formHolder}>
                     <View style={styles.formContainer}>
                         <View>
-                            <Image source={require('../../assets/notif.png')} style={styles.image} />
+                            <Image source={require('../../assets/notif.png')} style={styles.images} />
                         </View>
                         <View style={styles.cardItemContainer}>
                             <Text style={styles.titelText}>
@@ -62,9 +66,9 @@ const NoficationScreen = () => {
                 </View>
                 <View style={styles.buttonContainer}>
                     <View style={styles.buttonHolder}>
-                        <TouchableOpacity style={styles.buttonwrapper}>
+                        <TouchableOpacity style={styles.buttonwrapper} onPress={()=>{handleAllowNotifications();}}>
                             <Text style={styles.buttonText}>
-                                Allow Notifications
+                                Continue
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -102,7 +106,6 @@ const styles = StyleSheet.create({
         height: '40%',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'green'
     },
     formContainer: {
         width: '90%',
@@ -112,10 +115,10 @@ const styles = StyleSheet.create({
     },
     cardItemContainer: {
         width: '100%',
-        height: '90%',
+        height: '40%',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 10
+        padding: 5
     },
     buttonContainer: {
         position: 'absolute',
@@ -124,7 +127,6 @@ const styles = StyleSheet.create({
         height: '20%',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'pink'
     },
     buttonHolder: {
         width: '90%',
@@ -145,6 +147,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '500',
         color: '#fff',
+    },
+    images : {
+        width : 100,
+        height : 100,
+        resizeMode : 'contain'
     }
 
 

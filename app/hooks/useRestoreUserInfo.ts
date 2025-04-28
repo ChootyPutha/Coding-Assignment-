@@ -27,7 +27,7 @@ export const useRestoreUserInfo = (shouldRestore = true) => {
               const user: UserInfo = JSON.parse(jsonValue);
               console.log("user info ++++++ ",JSON.stringify(user));
               setUserInfo(user);
-              navigation.replace('NotificationScreen'); // User found, go to Home
+              navigation.replace('HomeScreen'); // User found, go to Home
             } else {
               navigation.replace('LegalInfoScreen'); // User not found, go to Legal
             }

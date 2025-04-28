@@ -24,7 +24,7 @@ export function useApi<T = any>() {
     const request = async ({ url, method = 'GET', data, params }: UseApiOptions<T>): Promise<T | null> => {
         setLoading(true);
         setError(null);
-        setResponseCode(200);
+        setResponseCode(null);
         try {
           const response = await axiosInstance.request<T>({
             url,

@@ -6,8 +6,9 @@ import { useApi } from "../../hooks/useApi";
 import { NewsArticle } from "../../types/NewsArticleTypes";
 import * as Linking from 'expo-linking';
 import { useNetInfo } from "@react-native-community/netinfo";
+import { useFormatUnixTimestamp } from "../../hooks/useFormatUnixTimestamp";
 
-const isDarkMode = false;
+const isDarkMode = true;
 
 const backgroundStyle = {
     backgroundColor: isDarkMode ? '#FFF' : '#000',
@@ -16,6 +17,7 @@ const backgroundStyle = {
 const HomeScreen = () => {
 
     const { userInfo, setUserInfo } = useAppContext();
+    const { formatUnixTimestamp } = useFormatUnixTimestamp();
 
     const { request, loading, error, responseCode } = useApi<NewsArticle[]>();
     const [news, setNews] = useState<NewsArticle[]>([]);
@@ -44,11 +46,14 @@ const HomeScreen = () => {
                 );
                 setCanFetch(false); //  Stop further API calls
             } else {
-                Alert.alert(
-                    'Error',
-                    'Failed to load news. Please try again later.',
-                    [{ text: 'OK' }]
-                );
+                if(responseCode != null){
+                    Alert.alert(
+                        'Error',
+                        'Failed to load news. Please try again later.',
+                        [{ text: 'OK' }]
+                    );
+                }
+                
             }
         } finally {
             setRefreshing(false);
@@ -84,15 +89,15 @@ const HomeScreen = () => {
                         <View style={styles.singleCardInfoContent}>
                             <View style={styles.singleCardInfoSubTextContainer}>
                                 <View>
-                                    <Text>{item.category}</Text>
+                                    <Text style={styles.catogeryText}>{item.category}</Text>
                                 </View>
                                 <View>
-                                    <Text>{item.datetime}</Text>
+                                    <Text style={styles.catogeryText}>{formatUnixTimestamp(item.datetime)}</Text>
                                 </View>
                             </View>
                             <View style={styles.singleCardInfoMainTextContainer}>
                                 <View>
-                                    <Text>{item.headline}</Text>
+                                    <Text style={styles.headdingText}>{item.headline.substring(0, 50)+'...'}</Text>
                                 </View>
                             </View>
                         </View>
@@ -108,15 +113,7 @@ const HomeScreen = () => {
     if (loading && news.length === 0) {
         return (
             <View style={styles.center}>
-                <ActivityIndicator size="large" />
-            </View>
-        );
-    }
-
-    if (error && news.length === 0) {
-        return (
-            <View style={styles.center}>
-                <Text style={styles.errorText}>Something went wrong. Please try again later.</Text>
+                <ActivityIndicator color={'#fff'} size="large" />
             </View>
         );
     }
@@ -137,19 +134,30 @@ const HomeScreen = () => {
                         </View>
 
                         <View style={styles.fetchDataHolder}>
+
+                            {
+                                ((error && news.length === 0)) ?
+                                    <View style={styles.center}>
+                                        <Text style={styles.errorText}>Something went wrong. Please try again later.</Text>
+                                    </View>
+                                :
+                                null
+                            }
+
                             <FlatList
+                                style={{ flex: 1, width: '100%', height: '100%', }}
                                 data={news}
                                 keyExtractor={keyExtractor}
                                 renderItem={renderItem}
                                 contentContainerStyle={styles.list}
                                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                                 initialNumToRender={10}
-                                maxToRenderPerBatch={10}
+                                maxToRenderPerBatch={20}
                                 windowSize={5}
-                                removeClippedSubviews={true}
+                                //removeClippedSubviews={true}
                                 ListEmptyComponent={
                                     <View style={styles.center}>
-                                        <Text>No news available.</Text>
+                                        <Text style={styles.errorText}>No news available.</Text>
                                     </View>
                                 }
                             />
@@ -168,22 +176,20 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
         height: '100%',
-        backgroundColor: 'red',
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#05021B'
     },
     mainContainer: {
         flex: 1,
         width: '100%',
         height: '100%',
-        backgroundColor: 'blue',
     },
     titelHodler: {
         width: '100%',
         //height : '15%',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'yellow',
     },
     titelContainer: {
         width: '90%',
@@ -194,7 +200,7 @@ const styles = StyleSheet.create({
     titelText: {
         fontSize: 30,
         fontWeight: '700',
-        color: '#000',
+        color: '#fff',
         fontFamily: 'Roboto',
     },
     fetchDataHolder: {
@@ -202,11 +208,10 @@ const styles = StyleSheet.create({
         height: '90%',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'green',
     },
     singleCardTouchArea: {
         width: '100%',
-        height: '20%',
+        height: 120,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -215,7 +220,6 @@ const styles = StyleSheet.create({
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'pink',
     },
     singleCardWrapper: {
         width: '90%',
@@ -223,14 +227,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'purple',
     },
     singleCardImageWrapper: {
         width: '33.3%',
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'white',
     },
     singleCardImageContainer: {
         width: '100%',
@@ -242,21 +244,19 @@ const styles = StyleSheet.create({
     singleCardImage: {
         width: '100%',
         height: '100%',
-        resizeMode: 'cover',
+        resizeMode:'contain',
     },
     singleCardInfoWrapper: {
         width: '66.6%',
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'yellow',
     },
     singleCardInfoContent: {
         width: '96%',
         height: '96%',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'red',
     },
     singleCardInfoSubTextContainer: {
         width: '100%',
@@ -269,22 +269,38 @@ const styles = StyleSheet.create({
     singleCardInfoMainTextContainer: {
         width: '100%',
         height: '85%',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'center',
-        backgroundColor: 'gray'
     },
     center: {
-        flex: 1,
-        justifyContent: 'center',
+        //flex: 1,
+        //justifyContent: 'center',
         alignItems: 'center',
+        marginTop : 10,
     },
     errorText: {
         color: 'red',
         fontSize: 16,
+        fontFamily :'Roboto',
+        fontWeight :'600'
     },
     list: {
-        paddingVertical: 8,
+        paddingVertical: 10,
     },
+    catogeryText : {
+        fontSize:12,
+        minWidth : 70,
+        color : '#fff',
+        fontFamily : 'Roboto',
+        fontWeight : '400',
+        textTransform: 'uppercase'
+    },
+    headdingText : {
+        fontSize:20,
+        color : '#fff',
+        fontFamily : 'Roboto',
+        fontWeight : '500',
+    }
 });
 
 export default HomeScreen;
