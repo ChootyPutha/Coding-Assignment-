@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, StatusBar, TextInput, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, StatusBar, Image, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNotificationPermissions } from "../../hooks/useNotificationPermissions";
 
@@ -44,6 +44,9 @@ const NoficationScreen = () => {
                 />
                 <View style={styles.formHolder}>
                     <View style={styles.formContainer}>
+                        <View>
+                            <Image source={require('../../assets/notif.png')} style={styles.image} />
+                        </View>
                         <View style={styles.cardItemContainer}>
                             <Text style={styles.titelText}>
                                 Get the most out of Blott ✅

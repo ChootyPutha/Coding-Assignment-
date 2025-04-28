@@ -79,71 +79,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         paddingBottom: 100, // To prevent overlap with floating button
     },
-    titelHodler: {
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    titelContainer: {
-        width: '90%',
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        marginVertical: 20,
-    },
-    titelText: {
-        fontSize: 30,
-        fontWeight: '700',
-        color: '#000',
-        fontFamily: 'Roboto',
-    },
-    infoHolder: {
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    infoTextContainer: {
-        width: '90%',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        marginBottom: 20,
-    },
-    infoText: {
-        fontFamily: 'Roboto',
-        fontSize: 16,
-        fontWeight: '400',
-        color: '#737373',
-    },
     formHolder: {
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    formElemenent: {
-        width: '90%',
-        padding: 10,
-    },
-    formInputs: {
-        width: '100%',
-        borderBottomWidth: 1,
-        borderBottomColor: '#A3A3A3',
-        paddingVertical: 8,
-        fontSize: 18,
-    },
-    floatingButton: {
-        position: 'absolute',
-        bottom: 30,
-        right: 20,
-        backgroundColor: '#b8aef8',
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOpacity: 0.3,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 5,
-        elevation: 5,
     },
 });
 
